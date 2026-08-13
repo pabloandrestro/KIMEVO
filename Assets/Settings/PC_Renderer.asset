@@ -27,7 +27,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   - {fileID: 7876152057211384485}
-  m_RendererFeatureMap: ad6b866f10d7b46ca5f20bff90b64d6d
+  - {fileID: 8228911204048128056}
+  m_RendererFeatureMap: ad6b866f10d7b46ca5f20bff90b64d6d3848853524f73272
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -94,4 +95,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae4d376c05df421b98c5b39b25b0d29, type: 3}
   m_Name: AR Background
   m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARBackgroundRendererFeature
+  m_Active: 1
+--- !u!114 &8228911204048128056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b019caa33e147829f48e2b15958f84, type: 3}
+  m_Name: AR Command Buffer Support
+  m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARCommandBufferSupportRendererFeature
   m_Active: 1
