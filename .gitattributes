@@ -1,0 +1,79 @@
+# Normalizacion de finales de linea.
+# En Windows git convierte LF<->CRLF al vuelo; sin esto el YAML de Unity produce
+# diffs enormes por cambios triviales y conflictos de merge artificiales.
+* text=auto
+
+*.cs    text diff=csharp
+*.md    text
+*.json  text
+*.shader text
+*.hlsl  text
+*.cginc text
+
+# --- YAML de Unity ---
+# -text: git no toca los finales de linea (Unity los escribe como quiere).
+# merge=unityyamlmerge: usa UnityYAMLMerge si el cliente lo tiene configurado.
+*.unity              -text merge=unityyamlmerge
+*.prefab             -text merge=unityyamlmerge
+*.asset              -text merge=unityyamlmerge
+*.mat                -text merge=unityyamlmerge
+*.anim               -text merge=unityyamlmerge
+*.controller         -text merge=unityyamlmerge
+*.overrideController -text merge=unityyamlmerge
+*.playable           -text merge=unityyamlmerge
+*.mask               -text merge=unityyamlmerge
+*.renderTexture      -text merge=unityyamlmerge
+*.spriteatlas        -text merge=unityyamlmerge
+*.terrainlayer       -text merge=unityyamlmerge
+*.mixer              -text merge=unityyamlmerge
+*.shadervariants     -text merge=unityyamlmerge
+*.physicMaterial     -text merge=unityyamlmerge
+*.physicsMaterial2D  -text merge=unityyamlmerge
+*.guiskin            -text merge=unityyamlmerge
+*.fontsettings       -text merge=unityyamlmerge
+*.flare              -text merge=unityyamlmerge
+*.brush              -text merge=unityyamlmerge
+*.giparams           -text merge=unityyamlmerge
+*.meta               -text merge=unityyamlmerge
+
+# --- Git LFS ---
+# Configurado ANTES de que existan binarios. Anadirlo despues obliga a
+# reescribir el historial con git filter-repo y a que todos vuelvan a clonar.
+# Imagenes
+*.png   filter=lfs diff=lfs merge=lfs -text
+*.jpg   filter=lfs diff=lfs merge=lfs -text
+*.jpeg  filter=lfs diff=lfs merge=lfs -text
+*.gif   filter=lfs diff=lfs merge=lfs -text
+*.psd   filter=lfs diff=lfs merge=lfs -text
+*.tga   filter=lfs diff=lfs merge=lfs -text
+*.tif   filter=lfs diff=lfs merge=lfs -text
+*.tiff  filter=lfs diff=lfs merge=lfs -text
+*.exr   filter=lfs diff=lfs merge=lfs -text
+*.hdr   filter=lfs diff=lfs merge=lfs -text
+*.cubemap filter=lfs diff=lfs merge=lfs -text
+# Modelos 3D
+*.fbx   filter=lfs diff=lfs merge=lfs -text
+*.obj   filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.dae   filter=lfs diff=lfs merge=lfs -text
+*.glb   filter=lfs diff=lfs merge=lfs -text
+*.gltf  filter=lfs diff=lfs merge=lfs -text
+# Audio
+*.wav   filter=lfs diff=lfs merge=lfs -text
+*.mp3   filter=lfs diff=lfs merge=lfs -text
+*.ogg   filter=lfs diff=lfs merge=lfs -text
+*.aif   filter=lfs diff=lfs merge=lfs -text
+# Video
+*.mp4   filter=lfs diff=lfs merge=lfs -text
+*.mov   filter=lfs diff=lfs merge=lfs -text
+*.webm  filter=lfs diff=lfs merge=lfs -text
+# Fuentes
+*.ttf   filter=lfs diff=lfs merge=lfs -text
+*.otf   filter=lfs diff=lfs merge=lfs -text
+# Librerias nativas y paquetes
+*.dll   filter=lfs diff=lfs merge=lfs -text
+*.so    filter=lfs diff=lfs merge=lfs -text
+*.aar   filter=lfs diff=lfs merge=lfs -text
+*.jar   filter=lfs diff=lfs merge=lfs -text
+*.bundle filter=lfs diff=lfs merge=lfs -text
+*.unitypackage filter=lfs diff=lfs merge=lfs -text
