@@ -30,6 +30,10 @@ namespace Kimevo.Core
         [Header("Mensaje de incompatibilidad")]
         [SerializeField] private CanvasGroup unsupportedPanel;
 
+        [SerializeField]
+        [Tooltip("Solo para pruebas: fuerza el camino de dispositivo incompatible sin preguntar a ARCore. Util porque CheckAvailability puede devolver Ready en telefonos no certificados que tengan Play Services for AR instalado por fuera.")]
+        private bool debugForceUnsupported;
+
         [Header("Tiempos (segundos)")]
         [SerializeField] private float wordmarkStart = 0.00f;
         [SerializeField] private float wordmarkDuration = 0.55f;
@@ -211,7 +215,9 @@ namespace Kimevo.Core
                 t += Time.deltaTime;
                 float e = Mathf.Clamp01(t / fade);
                 unsupportedPanel.alpha = e;
-                if (logoRoot != null) logoRoot.alpha = 1f - (e * 0.75f);
+                // El logo se atenua, pero sigue leyendose: es una pantalla de marca con una
+                // explicacion, no un error. Al 25% parecia rota.
+                if (logoRoot != null) logoRoot.alpha = 1f - (e * 0.40f);
                 yield return null;
             }
             unsupportedPanel.alpha = 1f;
@@ -221,6 +227,14 @@ namespace Kimevo.Core
 
         private IEnumerator CheckArSupport()
         {
+            if (debugForceUnsupported)
+            {
+                arSupported = false;
+                checkFinished = true;
+                Debug.Log("[KIMEVO] debugForceUnsupported activo: se fuerza el camino de incompatible.");
+                yield break;
+            }
+
             yield return ARSession.CheckAvailability();
 
             if (ARSession.state == ARSessionState.NeedsInstall)

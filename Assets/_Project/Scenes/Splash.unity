@@ -381,6 +381,7 @@ MonoBehaviour:
   diamondGroup: {fileID: 1718921022}
   bar: {fileID: 1830808891}
   unsupportedPanel: {fileID: 1935205326}
+  debugForceUnsupported: 1
   wordmarkStart: 0
   wordmarkDuration: 0.55
   circleStart: 0.45
@@ -450,6 +451,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   nextScene: ARWorld
   exitScale: 1.03
+  heavyWorkDelay: 0.3
 --- !u!4 &842737547
 Transform:
   m_ObjectHideFlags: 0
@@ -711,17 +713,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1.25
-  m_Text: 'KIMEVO necesita ARCore de Google para ver el mundo en 3D, y este modelo
-    no esta en la lista de telefonos compatibles.
-
-
-    Funciona en la mayoria de
-    Pixel, Galaxy S y Xiaomi recientes.
-
-
-    Puedes consultar la lista en
-
-    google.com/ar/devices'
+  m_Text: "KIMEVO necesita ARCore de Google para ver el mundo en 3D, y este modelo
+    no est\xE1 en la lista de tel\xE9fonos compatibles.\n\nFunciona en la mayor\xEDa
+    de Pixel, Galaxy S y Xiaomi recientes.\n\nPuedes consultar la lista en\ngoogle.com/ar/devices"
 --- !u!222 &1354580303
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -852,7 +846,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Este telefono no puede usar KIMEVO
+  m_Text: "Este tel\xE9fono no puede usar KIMEVO"
 --- !u!222 &1702401002
 CanvasRenderer:
   m_ObjectHideFlags: 0
