@@ -55,6 +55,10 @@ namespace Kimevo.Core
         [SerializeField] private string nextScene = "ARWorld";
         [SerializeField] private float exitScale = 1.03f;
 
+        [SerializeField]
+        [Tooltip("Margen antes de lanzar la comprobacion de AR y la carga de ARWorld. Deja que la animacion este ya en pantalla para que su coste no se vea.")]
+        private float heavyWorkDelay = 0.30f;
+
         private const float DiamondStartAngle = -45f;
         private const float DiamondStartScale = 0.45f;
 
@@ -64,8 +68,19 @@ namespace Kimevo.Core
         {
             ResetToStart();
 
-            // La comprobacion de AR corre en paralelo a la animacion: para cuando el logo
-            // termina ya sabemos si podemos entrar, sin sumar espera visible.
+            // Dos frames para que la pantalla pinte el estado inicial antes de tocar nada.
+            yield return null;
+            yield return null;
+
+            // La animacion arranca PRIMERO. Antes se lanzaban aqui la comprobacion de AR y
+            // la carga de ARWorld, y su coste en el hilo principal retrasaba el primer
+            // fotograma: se veian dos segundos de blanco quieto antes de que apareciera nada.
+            var intro = StartCoroutine(PlayIntro());
+
+            yield return new WaitForSeconds(heavyWorkDelay);
+
+            // Con el logo ya moviendose, el trabajo pesado deja de percibirse.
+            Application.backgroundLoadingPriority = ThreadPriority.Low;
             StartCoroutine(CheckArSupport());
 
             AsyncOperation load = null;
@@ -75,7 +90,7 @@ namespace Kimevo.Core
                 load.allowSceneActivation = false;
             }
 
-            yield return PlayIntro();
+            yield return intro;
 
             // Si la comprobacion aun no ha respondido, esperamos aqui y no antes.
             while (!checkFinished)
