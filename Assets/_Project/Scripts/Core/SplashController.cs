@@ -34,6 +34,11 @@ namespace Kimevo.Core
         [Tooltip("Solo para pruebas: fuerza el camino de dispositivo incompatible sin preguntar a ARCore. Util porque CheckAvailability puede devolver Ready en telefonos no certificados que tengan Play Services for AR instalado por fuera.")]
         private bool debugForceUnsupported;
 
+        [Header("Sonido")]
+        [SerializeField]
+        [Tooltip("Sting de apertura. Se dispara junto al primer fotograma de la animacion, no en Awake, para que imagen y sonido entren a la vez.")]
+        private AudioSource stingSource;
+
         [Header("Tiempos (segundos)")]
         [SerializeField] private float wordmarkStart = 0.00f;
         [SerializeField] private float wordmarkDuration = 0.55f;
@@ -79,6 +84,11 @@ namespace Kimevo.Core
             // La animacion arranca PRIMERO. Antes se lanzaban aqui la comprobacion de AR y
             // la carga de ARWorld, y su coste en el hilo principal retrasaba el primer
             // fotograma: se veian dos segundos de blanco quieto antes de que apareciera nada.
+            if (stingSource != null)
+            {
+                stingSource.Play();
+            }
+
             var intro = StartCoroutine(PlayIntro());
 
             yield return new WaitForSeconds(heavyWorkDelay);
