@@ -149,9 +149,10 @@ namespace Kimevo.Placement
                 return;
             }
 
-            // Sin superficie no hay preview: un objeto flotando en el aire promete una
-            // colocacion que despues no se puede cumplir.
-            if (!reticle.HasSurface)
+            // El preview solo aparece donde de verdad se puede colocar. Mostrarlo sobre la
+            // prolongacion de un plano promete una colocacion que luego se rechaza, y peor
+            // aun, la que si se aceptaba antes dejaba el objeto flotando en el aire.
+            if (!reticle.CanAnchor)
             {
                 if (preview.activeSelf) preview.SetActive(false);
                 return;
@@ -211,9 +212,11 @@ namespace Kimevo.Placement
 
         public bool Place()
         {
-            if (!reticle.HasPlane)
+            if (!reticle.CanAnchor)
             {
-                Debug.Log("[KIMEVO] Colocar cancelado: no hay plano confirmado bajo la reticula.");
+                Debug.Log("[KIMEVO] Colocar cancelado: bajo la reticula hay "
+                          + (reticle.HasSurface ? reticle.Current.Kind.ToString() : "nada")
+                          + ", no poligono confirmado.");
                 return false;
             }
 

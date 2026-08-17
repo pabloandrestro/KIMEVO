@@ -230,9 +230,9 @@ namespace Kimevo.Drawing
                 return true;
             }
 
-            if (surface == null || !surface.TryGetSurfaceHit(screenPoint, out SurfaceHit hit) || !hit.IsPlane)
+            if (surface == null || !surface.TryGetSurfaceHit(screenPoint, out SurfaceHit hit) || !hit.CanAnchor)
             {
-                Debug.Log("[KIMEVO] No se puede empezar a dibujar: no hay plano bajo el dedo.");
+                Debug.Log("[KIMEVO] No se puede empezar a dibujar: bajo el dedo no hay poligono confirmado.");
                 return false;
             }
 

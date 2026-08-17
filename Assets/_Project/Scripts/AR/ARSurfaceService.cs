@@ -5,6 +5,28 @@ using UnityEngine.XR.ARSubsystems;
 
 namespace Kimevo.AR
 {
+    /// <summary>
+    /// De que calidad es un impacto. La distincion importa: los tres se ven igual en pantalla
+    /// pero solo uno representa superficie real, y confundirlos es lo que produce objetos
+    /// plantados en el aire.
+    /// </summary>
+    public enum SurfaceHitKind
+    {
+        /// <summary>Dentro del poligono detectado. Superficie confirmada: aqui se ancla.</summary>
+        Polygon = 0,
+
+        /// <summary>
+        /// El plano prolongado mas alla de su borde real. Util para guiar la mirada mientras
+        /// ARCore termina de crecer el borde, pero anclar aqui coloca el objeto sobre una
+        /// superficie que no existe: la prolongacion del suelo pasa por debajo de la pared
+        /// del fondo, y el objeto acaba flotando a tres metros.
+        /// </summary>
+        PlaneExtension = 1,
+
+        /// <summary>Punto suelto de la nube. Ni superficie ni anclaje: solo senal de vida.</summary>
+        FeaturePoint = 2
+    }
+
     /// <summary>Resultado de preguntarle al mundo que hay bajo un punto de la pantalla.</summary>
     public readonly struct SurfaceHit
     {
@@ -13,12 +35,18 @@ namespace Kimevo.AR
         /// <summary>Plano impactado, o null si el impacto fue sobre un punto suelto de la nube.</summary>
         public readonly ARPlane Plane;
 
+        public readonly SurfaceHitKind Kind;
+
         public bool IsPlane => Plane != null;
 
-        public SurfaceHit(Pose pose, ARPlane plane)
+        /// <summary>Lo unico que autoriza a crear un anchor.</summary>
+        public bool CanAnchor => Kind == SurfaceHitKind.Polygon && Plane != null;
+
+        public SurfaceHit(Pose pose, ARPlane plane, SurfaceHitKind kind)
         {
             Pose = pose;
             Plane = plane;
+            Kind = kind;
         }
     }
 
@@ -78,15 +106,16 @@ namespace Kimevo.AR
         public bool TryGetSurfaceHit(Vector2 screenPoint, out SurfaceHit hit)
         {
             // 1. Dentro del poligono real del plano. Es el unico impacto sobre superficie confirmada.
-            if (TryRaycast(screenPoint, TrackableType.PlaneWithinPolygon, true, out hit))
+            if (TryRaycast(screenPoint, TrackableType.PlaneWithinPolygon, true, SurfaceHitKind.Polygon, out hit))
             {
                 return true;
             }
 
             // 2. El plano extendido al infinito. ARCore tarda en crecer los bordes: la mesa ya
-            //    esta detectada pero su poligono todavia no llega al borde real. Sin este paso
-            //    la reticula se apaga justo donde la persona quiere colocar.
-            if (TryRaycast(screenPoint, TrackableType.PlaneWithinInfinity, true, out hit))
+            //    esta detectada pero su poligono todavia no llega al borde real. Sirve para que
+            //    la reticula siga guiando ahi, pero se devuelve MARCADO, porque anclar sobre la
+            //    prolongacion de un plano coloca objetos donde no hay nada.
+            if (TryRaycast(screenPoint, TrackableType.PlaneWithinInfinity, true, SurfaceHitKind.PlaneExtension, out hit))
             {
                 return true;
             }
@@ -94,7 +123,7 @@ namespace Kimevo.AR
             // 3. Todavia no hay ningun plano. Un punto suelto no sirve para anclar, pero sirve
             //    para que la reticula se pose en algo y la app no parezca rota mientras ARCore
             //    reune informacion.
-            if (allowFeaturePoints && TryRaycast(screenPoint, TrackableType.FeaturePoint, false, out hit))
+            if (allowFeaturePoints && TryRaycast(screenPoint, TrackableType.FeaturePoint, false, SurfaceHitKind.FeaturePoint, out hit))
             {
                 return true;
             }
@@ -110,9 +139,10 @@ namespace Kimevo.AR
         /// </summary>
         public ARAnchor CreateAnchor(SurfaceHit hit)
         {
-            if (!hit.IsPlane)
+            if (!hit.CanAnchor)
             {
-                Debug.LogWarning("[KIMEVO] Se ha pedido un anchor sobre un impacto que no es un plano. No se crea.");
+                Debug.LogWarning("[KIMEVO] Anchor rechazado: el impacto es de tipo " + hit.Kind
+                                 + " y solo se ancla sobre poligono confirmado.");
                 return null;
             }
 
@@ -131,7 +161,8 @@ namespace Kimevo.AR
             return anchor;
         }
 
-        private bool TryRaycast(Vector2 screenPoint, TrackableType types, bool requirePlane, out SurfaceHit hit)
+        private bool TryRaycast(Vector2 screenPoint, TrackableType types, bool requirePlane, SurfaceHitKind kind,
+            out SurfaceHit hit)
         {
             hit = default;
 
@@ -164,11 +195,11 @@ namespace Kimevo.AR
                         continue;
                     }
 
-                    hit = new SurfaceHit(candidate.pose, plane);
+                    hit = new SurfaceHit(candidate.pose, plane, kind);
                     return true;
                 }
 
-                hit = new SurfaceHit(candidate.pose, null);
+                hit = new SurfaceHit(candidate.pose, null, kind);
                 return true;
             }
 

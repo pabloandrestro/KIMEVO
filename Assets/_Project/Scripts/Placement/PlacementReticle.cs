@@ -25,11 +25,11 @@ namespace Kimevo.Placement
         [SerializeField] private float lineWidth = 0.004f;
 
         [SerializeField]
-        [Tooltip("Color cuando hay un plano de verdad debajo: se puede colocar y dibujar.")]
+        [Tooltip("Superficie confirmada bajo la reticula: se puede colocar y dibujar.")]
         private Color onPlaneColor = new Color(0.05f, 0.78f, 0.78f, 1f);
 
         [SerializeField]
-        [Tooltip("Color cuando solo hay puntos sueltos: se ve algo, pero todavia no se puede anclar.")]
+        [Tooltip("Hay algo, pero no es superficie real: prolongacion de un plano o puntos sueltos. Guia la mirada, no deja anclar.")]
         private Color looseColor = new Color(0.85f, 0.40f, 0.05f, 1f);
 
         private LineRenderer ring;
@@ -38,8 +38,11 @@ namespace Kimevo.Placement
         /// <summary>Hubo impacto este frame.</summary>
         public bool HasSurface { get; private set; }
 
-        /// <summary>El impacto es sobre un plano confirmado, es decir, se puede anclar.</summary>
-        public bool HasPlane => HasSurface && Current.IsPlane;
+        /// <summary>
+        /// El impacto es sobre poligono confirmado. Antes bastaba con que hubiera un plano, y
+        /// eso incluia su prolongacion infinita: por eso se podian plantar objetos en el aire.
+        /// </summary>
+        public bool CanAnchor => HasSurface && Current.CanAnchor;
 
         public SurfaceHit Current { get; private set; }
 
@@ -70,7 +73,7 @@ namespace Kimevo.Placement
                 Current = hit;
 
                 ringTransform.SetPositionAndRotation(hit.Pose.position, hit.Pose.rotation);
-                SetColor(hit.IsPlane ? onPlaneColor : looseColor);
+                SetColor(hit.CanAnchor ? onPlaneColor : looseColor);
                 Show(true);
             }
             else

@@ -57,6 +57,7 @@ namespace Kimevo.UI
         private GameObject actionRow;
         private Button undoButton;
         private Button clearButton;
+        private Button planesButton;
 
         private Rect lastSafeArea;
         private readonly StringBuilder builder = new StringBuilder(160);
@@ -193,9 +194,9 @@ namespace Kimevo.UI
 
             undoButton = NewButton(row, "Deshacer", PanelDim, Ink, 30f, OnUndo);
             clearButton = NewButton(row, "Limpiar", PanelDim, Ink, 30f, OnClear);
-            NewButton(row, "Planos", PanelDim, Ink, 30f, () =>
+            planesButton = NewButton(row, "Planos", PanelDim, Ink, 30f, () =>
             {
-                if (planeToggle != null) planeToggle.Toggle();
+                if (planeToggle != null) planeToggle.Cycle();
             });
         }
 
@@ -224,6 +225,11 @@ namespace Kimevo.UI
             for (int i = 0; i < modeButtons.Length; i++)
             {
                 Tint(modeButtons[i], (int)mode == i ? Magenta : Panel, (int)mode == i ? Color.white : Ink);
+            }
+
+            if (planesButton != null && planeToggle != null)
+            {
+                SetLabel(planesButton, "Planos: " + planeToggle.DisplayLabel);
             }
 
             if (mode == AppMode.Place && placement != null)
@@ -279,9 +285,20 @@ namespace Kimevo.UI
             switch (modes != null ? modes.Mode : AppMode.Explore)
             {
                 case AppMode.Place:
-                    hintText.text = reticle != null && reticle.HasPlane
-                        ? "Toca la pantalla para colocar"
-                        : "Apunta con el centro a una superficie";
+                    if (reticle == null || !reticle.HasSurface)
+                    {
+                        hintText.text = "Apunta con el centro a una superficie";
+                    }
+                    else if (reticle.CanAnchor)
+                    {
+                        hintText.text = "Toca la pantalla para colocar";
+                    }
+                    else
+                    {
+                        // La reticula esta naranja: hay plano, pero solo su prolongacion.
+                        // Decirlo evita que la persona insista tocando sin que pase nada.
+                        hintText.text = "Ahi la superficie aun no llega. Apunta mas cerca del centro de la mesa";
+                    }
                     break;
 
                 case AppMode.Draw:
@@ -314,6 +331,9 @@ namespace Kimevo.UI
             builder.Append("  ·  objetos ").Append(placement != null ? placement.PlacedCount : 0);
             builder.Append("  ·  trazos ").Append(drawing != null ? drawing.StrokeCount : 0);
             builder.Append("  ·  ").Append(Mathf.RoundToInt(1f / Mathf.Max(Time.smoothDeltaTime, 0.0001f))).Append(" fps");
+            // La version va aqui y no en una pantalla de ajustes: sirve para responder "¿esto
+            // es el build nuevo?" sin cable y sin creerse a nadie.
+            builder.Append("  ·  v").Append(Application.version);
 
             diagText.text = builder.ToString();
         }
@@ -433,6 +453,20 @@ namespace Kimevo.UI
 
             var label = button.GetComponentInChildren<TextMeshProUGUI>();
             if (label != null) label.color = foreground;
+        }
+
+        private static void SetLabel(Button button, string text)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var label = button.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null && label.text != text)
+            {
+                label.text = text;
+            }
         }
 
         private static void SetActive(GameObject go, bool value)
