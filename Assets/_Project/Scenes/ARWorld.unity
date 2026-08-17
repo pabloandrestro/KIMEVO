@@ -614,7 +614,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &767545311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1085,6 +1085,203 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1964900729
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1964900738}
+  - component: {fileID: 1964900737}
+  - component: {fileID: 1964900736}
+  - component: {fileID: 1964900735}
+  - component: {fileID: 1964900734}
+  - component: {fileID: 1964900733}
+  - component: {fileID: 1964900732}
+  - component: {fileID: 1964900731}
+  - component: {fileID: 1964900730}
+  m_Layer: 0
+  m_Name: Kimevo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1964900730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69946abab3704914886350d192a95c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.UI.KimevoHud
+  modes: {fileID: 1964900737}
+  surface: {fileID: 1964900736}
+  reticle: {fileID: 1964900733}
+  placement: {fileID: 1964900732}
+  drawing: {fileID: 1964900731}
+  planeToggle: {fileID: 1964900735}
+  referenceResolution: {x: 1080, y: 1920}
+  rowHeight: 132
+  margin: 24
+--- !u!114 &1964900731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d072c1433e5dea24f961b38140f5d0e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Drawing.DrawingController
+  modes: {fileID: 1964900737}
+  surface: {fileID: 1964900736}
+  touch: {fileID: 1964900734}
+  arCamera: {fileID: 294707122}
+  strokeMaterial: {fileID: 2100000, guid: 3c00fa28fe203424b903dfd86356e4c7, type: 2}
+  surfaceOffset: 0.006
+  minPointDistance: 0.012
+  widths:
+  - 0.006
+  - 0.012
+  - 0.022
+  palette:
+  - {r: 0.839, g: 0.169, b: 0.388, a: 1}
+  - {r: 0.851, g: 0.4, b: 0.031, a: 1}
+  - {r: 0.039, g: 0.561, b: 0.561, a: 1}
+  - {r: 0.38, g: 0.251, b: 0.839, a: 1}
+  - {r: 0.96, g: 0.96, b: 0.96, a: 1}
+  maxDrawDistance: 6
+  maxStrokes: 60
+--- !u!114 &1964900732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea8b5f575e27b454bb61679195b12e78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Placement.PlacementController
+  modes: {fileID: 1964900737}
+  surface: {fileID: 1964900736}
+  reticle: {fileID: 1964900733}
+  touch: {fileID: 1964900734}
+  shapePrefabs:
+  - {fileID: 5039228405328369668, guid: bc728022f4fc76e488311f0b2bf6cf28, type: 3}
+  - {fileID: 6196432270401726620, guid: d052394c6cbdb8d4db1a7c821a6efbdb, type: 3}
+  - {fileID: 8584799213894862043, guid: 06b9b096f2d90324c97a166685f205e3, type: 3}
+  - {fileID: 6560497448004361211, guid: c5ea6e3d124e78f488abb75979416c88, type: 3}
+  shapeLabels:
+  - Cubo
+  - Esfera
+  - Capsula
+  - Cilindro
+  previewMaterial: {fileID: 2100000, guid: 511b31ee3c7e4914a86f5fdf021d4b0e, type: 2}
+  objectSize: 0.12
+  tapSlop: 40
+  tapMaxDuration: 0.6
+--- !u!114 &1964900733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cf6109f5648b8744ad514abcdbc27ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Placement.PlacementReticle
+  surface: {fileID: 1964900736}
+  lineMaterial: {fileID: 2100000, guid: 3c00fa28fe203424b903dfd86356e4c7, type: 2}
+  radius: 0.075
+  segments: 48
+  lineWidth: 0.004
+  onPlaneColor: {r: 0.05, g: 0.78, b: 0.78, a: 1}
+  looseColor: {r: 0.85, g: 0.4, b: 0.05, a: 1}
+--- !u!114 &1964900734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b11c6c6ca47c99e40b1cdc740a6ec760, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Interaction.TouchService
+--- !u!114 &1964900735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cf1cf0ad3472c24e9e2c4bc6055cacc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.AR.PlaneVisualizerToggle
+  planeManager: {fileID: 2057546705}
+  visible: 1
+--- !u!114 &1964900736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edefe4bb811f30e47a2b990c4da83c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.AR.ARSurfaceService
+  raycastManager: {fileID: 2057546707}
+  planeManager: {fileID: 2057546705}
+  anchorManager: {fileID: 2057546706}
+  minPlaneArea: 0.04
+  maxDistance: 6
+  allowFeaturePoints: 1
+--- !u!114 &1964900737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7ac1c3a06314e4594e2ea597d52c29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Core.AppModeController
+  startMode: 0
+--- !u!4 &1964900738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1983840861
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,6 +1338,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2057546704}
   - component: {fileID: 2057546703}
+  - component: {fileID: 2057546705}
+  - component: {fileID: 2057546707}
+  - component: {fileID: 2057546706}
   m_Layer: 0
   m_Name: XR Origin
   m_TagString: Untagged
@@ -1181,6 +1381,55 @@ Transform:
   - {fileID: 1779054096}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2057546705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057546702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1760703bbd54c04488a8d10600262ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARPlaneManager
+  <trackablesChanged>k__BackingField:
+    m_PersistentCalls:
+      m_Calls: []
+  m_PlanePrefab: {fileID: 8617005887254883800, guid: e60ae5f81d8a644468a86b964f89d7ab, type: 3}
+  m_DetectionMode: 3
+--- !u!114 &2057546706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057546702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728ad7fae8e460a4ba41265c7308d757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARAnchorManager
+  <trackablesChanged>k__BackingField:
+    m_PersistentCalls:
+      m_Calls: []
+  m_AnchorPrefab: {fileID: 0}
+--- !u!114 &2057546707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057546702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa17d122634046b4a8e23048891fafc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARRaycastManager
+  <trackablesChanged>k__BackingField:
+    m_PersistentCalls:
+      m_Calls: []
+  m_RaycastPrefab: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1192,3 +1441,4 @@ SceneRoots:
   - {fileID: 1983840863}
   - {fileID: 1811552539}
   - {fileID: 767545315}
+  - {fileID: 1964900738}
