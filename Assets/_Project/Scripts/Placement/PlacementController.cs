@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using Kimevo.AR;
 using Kimevo.Core;
+using Kimevo.Diagnostics;
 using Kimevo.Interaction;
 
 namespace Kimevo.Placement
@@ -210,7 +211,24 @@ namespace Kimevo.Placement
             }
         }
 
+        /// <summary>
+        /// Un intento de colocar. Envuelve al metodo de verdad solo para contarlo: cada toque
+        /// en modo Colocar es un intento, salga bien o no, y la diferencia entre los dos
+        /// numeros es exactamente la metrica de "colocacion sin reintento" que queremos bajar.
+        /// </summary>
         public bool Place()
+        {
+            bool placed = TryPlace();
+
+            if (ARMetrics.Instance != null)
+            {
+                ARMetrics.Instance.NotePlacement(placed);
+            }
+
+            return placed;
+        }
+
+        private bool TryPlace()
         {
             if (!reticle.CanAnchor)
             {

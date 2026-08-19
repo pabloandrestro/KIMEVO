@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using Kimevo.AR;
 using Kimevo.Core;
+using Kimevo.Diagnostics;
 using Kimevo.Drawing;
 using Kimevo.Placement;
 
@@ -31,6 +32,7 @@ namespace Kimevo.UI
         [SerializeField] private PlacementController placement;
         [SerializeField] private DrawingController drawing;
         [SerializeField] private PlaneVisualizerToggle planeToggle;
+        [SerializeField] private DebugOverlay debugOverlay;
 
         [Header("Aspecto")]
         [SerializeField] private Vector2 referenceResolution = new Vector2(1080f, 1920f);
@@ -47,7 +49,6 @@ namespace Kimevo.UI
         private TextMeshProUGUI hintText;
         private TextMeshProUGUI diagText;
 
-        private Button[] modeButtons;
         private Button[] shapeButtons;
         private Button[] colorButtons;
         private Button[] widthButtons;
@@ -58,6 +59,10 @@ namespace Kimevo.UI
         private Button undoButton;
         private Button clearButton;
         private Button planesButton;
+
+        private ModeBar modeBar;
+        private readonly RectTransform[] stackedRows = new RectTransform[3];
+        private float lastBarHeight = -1f;
 
         private Rect lastSafeArea;
         private readonly StringBuilder builder = new StringBuilder(160);
@@ -70,6 +75,7 @@ namespace Kimevo.UI
             if (placement == null) placement = FindAnyObjectByType<PlacementController>(FindObjectsInactive.Include);
             if (drawing == null) drawing = FindAnyObjectByType<DrawingController>(FindObjectsInactive.Include);
             if (planeToggle == null) planeToggle = FindAnyObjectByType<PlaneVisualizerToggle>(FindObjectsInactive.Include);
+            if (debugOverlay == null) debugOverlay = FindAnyObjectByType<DebugOverlay>(FindObjectsInactive.Include);
 
             Build();
         }
@@ -77,9 +83,50 @@ namespace Kimevo.UI
         private void Update()
         {
             ApplySafeArea();
+            ReflowRowsIfNeeded();
             RefreshRows();
             RefreshHint();
             RefreshDiagnostics();
+        }
+
+        /// <summary>
+        /// Sube las filas secundarias por encima de la barra de modos.
+        ///
+        /// El alto de la barra se mide en dp, asi que depende de la densidad del dispositivo y
+        /// no se conoce hasta que la barra ha hecho su primer layout. Se consulta cada frame
+        /// pero solo se MUEVE algo cuando el valor cambia de verdad: recolocar RectTransforms
+        /// si ensucia el canvas, y hacerlo cada frame seria el mismo pecado que la barra evita
+        /// con tanto cuidado.
+        /// </summary>
+        private void ReflowRowsIfNeeded()
+        {
+            if (modeBar == null)
+            {
+                return;
+            }
+
+            float barHeight = modeBar.OccupiedHeight;
+            if (barHeight <= 0f || Mathf.Approximately(barHeight, lastBarHeight))
+            {
+                return;
+            }
+
+            lastBarHeight = barHeight;
+
+            float first = barHeight + 12f;
+            float second = first + rowHeight + 12f;
+
+            SetRowBottom(stackedRows[0], first);
+            SetRowBottom(stackedRows[1], first);
+            SetRowBottom(stackedRows[2], second);
+        }
+
+        private static void SetRowBottom(RectTransform row, float bottom)
+        {
+            if (row != null)
+            {
+                row.anchoredPosition = new Vector2(row.anchoredPosition.x, bottom);
+            }
         }
 
         // ---------------------------------------------------------------- construccion
@@ -108,11 +155,100 @@ namespace Kimevo.UI
             safeRoot.offsetMax = Vector2.zero;
 
             BuildHint();
-            BuildModeRow();
             BuildPlaceRow();
             BuildDrawRow();
             BuildActionRow();
             BuildDiagnostics();
+            BuildDebugButton();
+
+            // La barra se cuelga de la raiz del canvas y no de safeRoot: hace su propio
+            // calculo de area segura en dp, y meterla dentro de un padre ya recortado por el
+            // notch contaria el recorte dos veces.
+            BuildModeBar((RectTransform)canvasGo.transform);
+        }
+
+        /// <summary>
+        /// La barra de tres modos sustituye a la antigua fila de botones de texto.
+        ///
+        /// El HUD deja de pintar los modos y pasa a ser solo su oyente: quien manda sigue
+        /// siendo AppModeController. Por eso se escuchan las dos direcciones - el toque en la
+        /// barra avisa al controlador, y el controlador avisa a la barra - en vez de dejar que
+        /// la barra guarde su propio estado. Si alguien cambia de modo por codigo, la barra
+        /// tiene que enterarse igual.
+        /// </summary>
+        private void BuildModeBar(RectTransform canvasRoot)
+        {
+            var go = new GameObject("ModeBar");
+            go.transform.SetParent(transform, false);
+
+            modeBar = go.AddComponent<ModeBar>();
+            modeBar.Build(canvasRoot);
+            modeBar.ModeSelected += OnModeBarSelected;
+
+            if (modes != null)
+            {
+                modes.ModeChanged += OnModeChangedExternally;
+                modeBar.SetMode((int)modes.Mode);
+            }
+        }
+
+        private void OnModeBarSelected(int index)
+        {
+            if (modes != null)
+            {
+                modes.SetModeIndex(index);
+            }
+        }
+
+        private void OnModeChangedExternally(AppMode mode)
+        {
+            if (modeBar != null)
+            {
+                modeBar.SetMode((int)mode);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (modeBar != null)
+            {
+                modeBar.ModeSelected -= OnModeBarSelected;
+            }
+
+            if (modes != null)
+            {
+                modes.ModeChanged -= OnModeChangedExternally;
+            }
+        }
+
+        /// <summary>
+        /// El acceso al panel de depuracion.
+        ///
+        /// Va arriba a la derecha y no en la fila de acciones porque esa fila se esconde en
+        /// modo Explorar, y justo ahi es donde mas falta hace mirar las metricas: cuando la
+        /// app todavia esta buscando superficies y no se puede hacer nada mas. Pequeno y al
+        /// 35% para que no compita con la camara, que es lo que manda en pantalla.
+        /// </summary>
+        private void BuildDebugButton()
+        {
+            RectTransform rect = NewRect("DebugButton", safeRoot);
+            rect.anchorMin = new Vector2(1f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(1f, 1f);
+            rect.anchoredPosition = new Vector2(-margin, -(margin + 96f + 8f + 44f + 8f));
+            rect.sizeDelta = new Vector2(96f, 56f);
+
+            var image = rect.gameObject.AddComponent<Image>();
+            image.color = new Color(1f, 1f, 1f, 0.35f);
+
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.onClick.AddListener(() =>
+            {
+                if (debugOverlay != null) debugOverlay.Toggle();
+            });
+
+            NewText(rect, "debug", 24f, Ink, TextAlignmentOptions.Center);
         }
 
         private void BuildHint()
@@ -131,23 +267,11 @@ namespace Kimevo.UI
             hintText = NewText(pill, string.Empty, 34f, Color.white, TextAlignmentOptions.Center);
         }
 
-        private void BuildModeRow()
-        {
-            RectTransform row = NewRow("ModeRow", margin);
-            string[] labels = { "Explorar", "Colocar", "Dibujar" };
-            modeButtons = new Button[labels.Length];
-
-            for (int i = 0; i < labels.Length; i++)
-            {
-                int index = i;
-                modeButtons[i] = NewButton(row, labels[i], Panel, Ink, 34f, () => modes.SetModeIndex(index));
-            }
-        }
-
         private void BuildPlaceRow()
         {
             RectTransform row = NewRow("PlaceRow", margin + rowHeight + 12f);
             placeRow = row.gameObject;
+            stackedRows[0] = row;
 
             int count = placement != null ? placement.ShapeCount : 0;
             shapeButtons = new Button[count];
@@ -164,6 +288,7 @@ namespace Kimevo.UI
         {
             RectTransform row = NewRow("DrawRow", margin + rowHeight + 12f);
             drawRow = row.gameObject;
+            stackedRows[1] = row;
 
             int colors = drawing != null ? drawing.ColorCount : 0;
             colorButtons = new Button[colors];
@@ -191,6 +316,7 @@ namespace Kimevo.UI
         {
             RectTransform row = NewRow("ActionRow", margin + (rowHeight + 12f) * 2f);
             actionRow = row.gameObject;
+            stackedRows[2] = row;
 
             undoButton = NewButton(row, "Deshacer", PanelDim, Ink, 30f, OnUndo);
             clearButton = NewButton(row, "Limpiar", PanelDim, Ink, 30f, OnClear);
@@ -222,10 +348,8 @@ namespace Kimevo.UI
             SetActive(drawRow, mode == AppMode.Draw);
             SetActive(actionRow, mode != AppMode.Explore);
 
-            for (int i = 0; i < modeButtons.Length; i++)
-            {
-                Tint(modeButtons[i], (int)mode == i ? Magenta : Panel, (int)mode == i ? Color.white : Ink);
-            }
+            // Los modos ya no se pintan aqui: los lleva ModeBar, que se entera por el evento
+            // de AppModeController.
 
             if (planesButton != null && planeToggle != null)
             {
