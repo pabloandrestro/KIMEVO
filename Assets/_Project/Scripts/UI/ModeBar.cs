@@ -96,6 +96,14 @@ namespace Kimevo.UI
 
         public int Current => current;
 
+        /// <summary>
+        /// Alto que ocupa la barra medido DESDE EL BORDE INFERIOR DEL AREA SEGURA, en unidades
+        /// de canvas. Es lo que necesita el HUD para colocar sus filas justo encima sin
+        /// solaparse. No incluye el area segura en si porque el HUD ya vive dentro de ella:
+        /// sumarla contaria el notch dos veces.
+        /// </summary>
+        public float OccupiedHeight { get; private set; }
+
         // ---------------------------------------------------------------- ciclo
 
         /// <summary>
@@ -392,10 +400,18 @@ namespace Kimevo.UI
             float safeBottom = safe.yMin / scale;
 
             float captionHeight = captionDp * unitsPerDp;
-            float rowHeight = touch + captionHeight + (6f * unitsPerDp);
+
+            // El punto indicador vive POR ENCIMA de los circulos, asi que forma parte del
+            // alto ocupado aunque no este dentro de ningun boton. Sin reservarle sitio se
+            // colaba por debajo de la fila que el HUD coloca justo encima y se solapaba con
+            // ella.
+            float indicatorZone = 14f * unitsPerDp;
+            float rowHeight = touch + captionHeight + (6f * unitsPerDp) + indicatorZone;
 
             row.sizeDelta = new Vector2((touch * 3f) + (gap * 2f), rowHeight);
             row.anchoredPosition = new Vector2(0f, safeBottom + bottomMargin);
+
+            OccupiedHeight = rowHeight + bottomMargin;
 
             float step = touch + gap;
             float firstX = -step;
