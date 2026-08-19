@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using Kimevo.AR;
 using Kimevo.Core;
+using Kimevo.Diagnostics;
 using Kimevo.Drawing;
 using Kimevo.Placement;
 
@@ -31,6 +32,7 @@ namespace Kimevo.UI
         [SerializeField] private PlacementController placement;
         [SerializeField] private DrawingController drawing;
         [SerializeField] private PlaneVisualizerToggle planeToggle;
+        [SerializeField] private DebugOverlay debugOverlay;
 
         [Header("Aspecto")]
         [SerializeField] private Vector2 referenceResolution = new Vector2(1080f, 1920f);
@@ -70,6 +72,7 @@ namespace Kimevo.UI
             if (placement == null) placement = FindAnyObjectByType<PlacementController>(FindObjectsInactive.Include);
             if (drawing == null) drawing = FindAnyObjectByType<DrawingController>(FindObjectsInactive.Include);
             if (planeToggle == null) planeToggle = FindAnyObjectByType<PlaneVisualizerToggle>(FindObjectsInactive.Include);
+            if (debugOverlay == null) debugOverlay = FindAnyObjectByType<DebugOverlay>(FindObjectsInactive.Include);
 
             Build();
         }
@@ -113,6 +116,37 @@ namespace Kimevo.UI
             BuildDrawRow();
             BuildActionRow();
             BuildDiagnostics();
+            BuildDebugButton();
+        }
+
+        /// <summary>
+        /// El acceso al panel de depuracion.
+        ///
+        /// Va arriba a la derecha y no en la fila de acciones porque esa fila se esconde en
+        /// modo Explorar, y justo ahi es donde mas falta hace mirar las metricas: cuando la
+        /// app todavia esta buscando superficies y no se puede hacer nada mas. Pequeno y al
+        /// 35% para que no compita con la camara, que es lo que manda en pantalla.
+        /// </summary>
+        private void BuildDebugButton()
+        {
+            RectTransform rect = NewRect("DebugButton", safeRoot);
+            rect.anchorMin = new Vector2(1f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(1f, 1f);
+            rect.anchoredPosition = new Vector2(-margin, -(margin + 96f + 8f + 44f + 8f));
+            rect.sizeDelta = new Vector2(96f, 56f);
+
+            var image = rect.gameObject.AddComponent<Image>();
+            image.color = new Color(1f, 1f, 1f, 0.35f);
+
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.onClick.AddListener(() =>
+            {
+                if (debugOverlay != null) debugOverlay.Toggle();
+            });
+
+            NewText(rect, "debug", 24f, Ink, TextAlignmentOptions.Center);
         }
 
         private void BuildHint()

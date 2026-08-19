@@ -1102,6 +1102,9 @@ GameObject:
   - component: {fileID: 1964900732}
   - component: {fileID: 1964900731}
   - component: {fileID: 1964900730}
+  - component: {fileID: 1964900741}
+  - component: {fileID: 1964900740}
+  - component: {fileID: 1964900739}
   m_Layer: 0
   m_Name: Kimevo
   m_TagString: Untagged
@@ -1127,6 +1130,7 @@ MonoBehaviour:
   placement: {fileID: 1964900732}
   drawing: {fileID: 1964900731}
   planeToggle: {fileID: 1964900735}
+  debugOverlay: {fileID: 0}
   referenceResolution: {x: 1080, y: 1920}
   rowHeight: 132
   margin: 24
@@ -1235,7 +1239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Kimevo.AR.PlaneVisualizerToggle
   planeManager: {fileID: 2057546705}
-  visible: 1
+  display: 0
 --- !u!114 &1964900736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1282,6 +1286,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1964900739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050f1dcc9b503d54fa83d1cca0e27a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Diagnostics.DebugOverlay
+  refreshRate: 4
+  maxPlanesListed: 10
+--- !u!114 &1964900740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a64cffb0bc445d946b90c75b344dd179, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Diagnostics.CalibrationCube
+  fallbackDistance: 2
+--- !u!114 &1964900741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964900729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcfa4dd0fcd9e2d4dafd061c84521514, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Kimevo.Diagnostics.ARMetrics
+  logInterval: 5
+  fpsWarmup: 2.5
+  driftDelay: 30
 --- !u!1 &1983840861
 GameObject:
   m_ObjectHideFlags: 0
