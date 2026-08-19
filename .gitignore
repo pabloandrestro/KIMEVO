@@ -51,3 +51,7 @@ crashlytics-build.properties
 
 # Carpeta temporal de Unity (staging de simbolos de debug durante builds)
 .utmp/
+
+# Capturas de QA de la interfaz: se generan al vuelo y no son fuente
+Assets/Screenshots/
+Assets/Screenshots.meta
